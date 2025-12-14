@@ -21,6 +21,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from users.views import RegisterView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,4 +29,5 @@ urlpatterns = [
     # Die Endpunkte für dein Diagramm:
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # Login
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # Refresh
+    path('api/register/', RegisterView.as_view(), name='auth_register'),
 ]
