@@ -24,3 +24,41 @@ class RegisterTests(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_duplicate_username(self):
+        # Create first users
+        User.objects.create_user(username='testuser', email='test1@example.com', password='password')
+        
+        url = reverse('auth_register')
+        data = {
+            'username': 'testuser',
+            'password': 'newpassword123',
+            'email': 'test2@example.com'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('username', response.data)
+
+    def test_register_duplicate_email(self):
+        # Create first users
+        User.objects.create_user(username='testuser1', email='test@example.com', password='password')
+        
+        url = reverse('auth_register')
+        data = {
+            'username': 'testuser2',
+            'password': 'newpassword123',
+            'email': 'test@example.com'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('email', response.data)
+
+    def test_register_missing_email(self):
+        url = reverse('auth_register')
+        data = {
+            'username': 'noemailuser',
+            'password': 'testpassword123'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('email', response.data)
