@@ -31,6 +31,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # Refresh
     path('api/register/', RegisterView.as_view(), name='auth_register'),
     path('', include('exercises.urls')),
+    path('', include('trainings.urls')),
 ]
 
 from django.conf import settings
