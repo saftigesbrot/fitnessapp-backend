@@ -1,0 +1,48 @@
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework import status
+from django.db.models import Q
+from .models import Exercise, ExerciseCategory
+from .serializers import ExerciseSerializer
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_exercise(request):
+    exercise_id = request.query_params.get('id')
+    if not exercise_id:
+        return Response({'error': 'Exercise ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        exercise = Exercise.objects.get(exercise_id=exercise_id)
+        serializer = ExerciseSerializer(exercise)
+        return Response(serializer.data)
+    except Exercise.DoesNotExist:
+        return Response({'error': 'Exercise not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_exercise(request):
+    serializer = ExerciseSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def search_exercises(request):
+    name_query = request.query_params.get('name')
+    category_query = request.query_params.get('category')
+    
+    queryset = Exercise.objects.all()
+    
+    if name_query:
+        queryset = queryset.filter(name__icontains=name_query)
+        
+    if category_query:
+        # Assuming category_query matches the category name
+        queryset = queryset.filter(category__name__icontains=category_query)
+        
+    serializer = ExerciseSerializer(queryset, many=True)
+    return Response(serializer.data)
