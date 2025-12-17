@@ -105,14 +105,39 @@ def save_training(request):
     if session.plan.user != request.user:
         return Response({'error': 'Not authorized to save this session'}, status=status.HTTP_403_FORBIDDEN)
 
-    # 1. Create Scoring
-    scoring = TrainingPlanScoring.objects.create(
+    # 1. Handle Scoring
+    scoring_obj = None
+    if scoring_data.get('use_scoring', True):
+        score_value = scoring_data.get('score_value', 0) # Expect frontend to send calculated score
+        # Note: Previous implementation assumed 'scoring_id' was an integer value/ID. 
+        # Now we create a new ScoringAllTime entry.
+        
+        # Create AllTime entry
+        from scorings.models import ScoringAllTime, ScoringCurrent, ScoringTop
+        scoring_obj = ScoringAllTime.objects.create(
+            user=request.user,
+            value=score_value
+        )
+        
+        # Update Current
+        ScoringCurrent.objects.update_or_create(
+            user=request.user,
+            defaults={'value': score_value}
+        )
+        
+        # Update Top if higher
+        top_scoring, created = ScoringTop.objects.get_or_create(user=request.user, defaults={'value': score_value})
+        if not created and score_value > top_scoring.value:
+            top_scoring.value = score_value
+            top_scoring.save()
+
+    scoring_plan = TrainingPlanScoring.objects.create(
         use_scoring=scoring_data.get('use_scoring', True),
-        scoring_id=scoring_data.get('scoring_id')
+        scoring=scoring_obj
     )
     
     # 2. Link Scoring to Session
-    session.scoring_plan = scoring
+    session.scoring_plan = scoring_plan
     session.save()
     
     # 3. Create Executions

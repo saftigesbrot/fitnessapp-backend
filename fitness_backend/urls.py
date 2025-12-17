@@ -32,6 +32,7 @@ urlpatterns = [
     path('api/register/', RegisterView.as_view(), name='auth_register'),
     path('', include('exercises.urls')),
     path('', include('trainings.urls')),
+    path('', include('scorings.urls')),
 ]
 
 from django.conf import settings

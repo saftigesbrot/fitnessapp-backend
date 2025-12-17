@@ -52,7 +52,7 @@ class TrainingTests(TestCase):
         # 3. Save Training
         save_data = {
             'plan_exercise_id': plan_exercise_id,
-            'scoring': {'use_scoring': True, 'scoring_id': 100},
+            'scoring': {'use_scoring': True, 'score_value': 150},
             'executions': [
                 {'exercise_id': self.exercise.exercise_id, 'weight': 20, 'duration': 0, 'repetitions': 12},
                 {'exercise_id': self.exercise.exercise_id, 'weight': 20, 'duration': 0, 'repetitions': 10}
@@ -64,7 +64,11 @@ class TrainingTests(TestCase):
         # Verify DB
         session = TrainingPlanExercise.objects.get(plan_exercise_id=plan_exercise_id)
         self.assertIsNotNone(session.scoring_plan)
-        self.assertEqual(session.scoring_plan.scoring_id, 100)
+        # Check that linked scoring is valid (the scoring_id in TrainingPlanScoring is now a FK to ScoringAllTime)
+        # Note: 'scoring' field is the FK. 'scoring_plan' is the TrainingPlanScoring model.
+        # Inside TrainingPlanScoring (scoring_plan), there is a 'scoring' FK to ScoringAllTime.
+        self.assertIsNotNone(session.scoring_plan.scoring) 
+        self.assertEqual(session.scoring_plan.scoring.value, 150)
         
         executions = TrainingExerciseExecution.objects.filter(plan_exercise=session)
         self.assertEqual(executions.count(), 2)

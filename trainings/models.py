@@ -26,7 +26,8 @@ class TrainingPlanScoring(models.Model):
     scoring_plan_id = models.AutoField(primary_key=True)
     use_scoring = models.BooleanField(default=True)
     # Placeholder for SCORING_ALLTIME as IntegerField per plan
-    scoring_id = models.IntegerField(null=True, blank=True)
+    # Linked to ScoringAllTime
+    scoring = models.ForeignKey('scorings.ScoringAllTime', on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class TrainingPlanExercise(models.Model):
