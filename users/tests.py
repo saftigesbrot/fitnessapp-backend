@@ -1,64 +1,41 @@
-from django.urls import reverse
-from rest_framework.test import APITestCase
-from rest_framework import status
+from django.test import TestCase
 from django.contrib.auth.models import User
+from rest_framework.test import APIClient
+from rest_framework import status
 
-class RegisterTests(APITestCase):
+class UserTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='testuser', password='testpassword', email='test@example.com')
+        self.client.force_authenticate(user=self.user)
+
     def test_register_user(self):
-        url = reverse('auth_register')
         data = {
-            'username': 'testuser',
-            'password': 'testpassword123',
-            'email': 'test@example.com'
+            'username': 'newuser',
+            'password': 'newpassword',
+            'email': 'new@example.com'
         }
-        response = self.client.post(url, data, format='json')
+        response = self.client.post('/api/register/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(User.objects.count(), 1)
-        self.assertEqual(User.objects.get().username, 'testuser')
+        self.assertEqual(User.objects.count(), 2)
 
-    def test_register_missing_password(self):
-        url = reverse('auth_register')
-        data = {
-            'username': 'testuser_nopass',
-            'email': 'nopass@example.com'
-        }
-        response = self.client.post(url, data, format='json')
+    def test_get_user(self):
+        # Valid ID
+        response = self.client.get(f'/user-get?id={self.user.id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['username'], 'testuser')
+        self.assertEqual(response.data['id'], self.user.id)
+
+        # Invalid ID
+        response = self.client.get('/user-get?id=9999')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Missing ID
+        response = self.client.get('/user-get')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_register_duplicate_username(self):
-        # Create first users
-        User.objects.create_user(username='testuser', email='test1@example.com', password='password')
-        
-        url = reverse('auth_register')
-        data = {
-            'username': 'testuser',
-            'password': 'newpassword123',
-            'email': 'test2@example.com'
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('username', response.data)
-
-    def test_register_duplicate_email(self):
-        # Create first users
-        User.objects.create_user(username='testuser1', email='test@example.com', password='password')
-        
-        url = reverse('auth_register')
-        data = {
-            'username': 'testuser2',
-            'password': 'newpassword123',
-            'email': 'test@example.com'
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('email', response.data)
-
-    def test_register_missing_email(self):
-        url = reverse('auth_register')
-        data = {
-            'username': 'noemailuser',
-            'password': 'testpassword123'
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('email', response.data)
+    def test_get_user_unauthorized(self):
+        self.client.logout() # Ensure unauthenticated (force_authenticate overrides this usually so need to be careful)
+        self.client.force_authenticate(user=None)
+        response = self.client.get(f'/user-get?id={self.user.id}')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

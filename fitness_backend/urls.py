@@ -33,6 +33,7 @@ urlpatterns = [
     path('', include('exercises.urls')),
     path('', include('trainings.urls')),
     path('', include('scorings.urls')),
+    path('', include('users.urls')),
 ]
 
 from django.conf import settings
