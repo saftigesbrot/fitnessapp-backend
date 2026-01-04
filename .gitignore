@@ -5,3 +5,5 @@ db.sqlite3
 .DS_Store
 media/backend_error.log
 debug_backend.py
+media/
+backend_error.log
