@@ -108,24 +108,33 @@ def save_training_execution(request):
     try:
         user = request.user
         data = request.data
-        plan_id = data.get('plan_id')
-        exercise_order = data.get('exercises_order', []) # JSON list of IDs
-        sets_data = data.get('sets', []) # List of set objects
-
-        # 1. Create TrainingPlanExercise (The Session)
-        plan = TrainingPlan.objects.get(plan_id=plan_id)
         
-        session = TrainingPlanExercise.objects.create(
-            plan=plan,
-            order=exercise_order
-        )
+        plan_exercise_id = data.get('plan_exercise_id')
+        plan_id = data.get('plan_id')
+        exercise_order = data.get('exercises_order', []) 
+        # Support both 'sets' and 'executions' keys
+        sets_data = data.get('sets', data.get('executions', []))
+        scoring_data = data.get('scoring', {}) # { use_scoring: true, score_value: 150 }
+
+        # 1. Resolve Session
+        session = None
+        if plan_exercise_id:
+             session = get_object_or_404(TrainingPlanExercise, plan_exercise_id=plan_exercise_id)
+             if exercise_order: 
+                 session.order = exercise_order
+                 session.save()
+        elif plan_id:
+             # Fallback if no session started
+             plan = get_object_or_404(TrainingPlan, plan_id=plan_id)
+             session = TrainingPlanExercise.objects.create(plan=plan, order=exercise_order)
+        else:
+             return Response({'error': 'Either plan_exercise_id or plan_id is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 2. Iterate and create Executions
         total_xp = 0
         from exercises.models import Exercise
 
         for set_info in sets_data:
-            # set_info structure assumed: { exercise_id, weight, reps, duration? }
             exercise_id = set_info.get('exercise_id')
             weight = set_info.get('weight', 0)
             reps = set_info.get('reps', 0)
@@ -145,10 +154,29 @@ def save_training_execution(request):
             except Exercise.DoesNotExist:
                 continue
 
-        # 3. Update User XP
-        from scorings.models import ScoringCurrent, ScoringAllTime, LevelCurrent
-        
-        # Level ONLY (Scoring is separate)
+        # 3. Handle Scoring
+        if scoring_data and scoring_data.get('use_scoring'):
+             score_val = scoring_data.get('score_value', 0)
+             from scorings.models import ScoringAllTime
+             
+             # Create Scoring Entry
+             scoring_entry = ScoringAllTime.objects.create(
+                 user=user, 
+                 value=score_val
+             )
+             
+             # Create TrainingPlanScoring
+             plan_scoring = TrainingPlanScoring.objects.create(
+                 use_scoring=True,
+                 scoring=scoring_entry
+             )
+             
+             # Link to Session
+             session.scoring_plan = plan_scoring
+             session.save()
+
+        # 4. Update Level XP
+        from scorings.models import LevelCurrent
         level_tracker, created = LevelCurrent.objects.get_or_create(user=user)
         level_tracker.xp += total_xp
         level_tracker.save()

@@ -5,6 +5,9 @@ from rest_framework import status
 from .models import ExerciseCategory, Exercise
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+import io
+from PIL import Image
+
 class ExerciseTests(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -13,7 +16,12 @@ class ExerciseTests(TestCase):
         
     def test_create_exercise(self):
         self.client.force_authenticate(user=self.user)
-        image = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        # Generate valid image using PIL
+        image_file = io.BytesIO()
+        image = Image.new('RGB', (100, 100), 'white')
+        image.save(image_file, 'JPEG')
+        image_file.seek(0)
+        image = SimpleUploadedFile("file.jpg", image_file.read(), content_type="image/jpeg")
         data = {
             'name': 'Bicep Curl',
             'description': 'Lift weight',
