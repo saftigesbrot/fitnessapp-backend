@@ -38,6 +38,7 @@ class TrainingPlanExercise(models.Model):
     plan = models.ForeignKey(TrainingPlan, on_delete=models.CASCADE)
     # The scoring is attached at the end of the session
     scoring_plan = models.ForeignKey(TrainingPlanScoring, on_delete=models.SET_NULL, null=True, blank=True)
+    order = models.JSONField(default=list, help_text="JSON list of exercise IDs defining the execution order")
     created_at = models.DateTimeField(auto_now_add=True)
 
 class TrainingExerciseExecution(models.Model):

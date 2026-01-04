@@ -7,13 +7,33 @@ class TrainingCategorySerializer(serializers.ModelSerializer):
         model = TrainingCategory
         fields = '__all__'
 
+from exercises.models import Exercise
+
 class TrainingPlanSerializer(serializers.ModelSerializer):
     category_detail = TrainingCategorySerializer(source='category', read_only=True)
+    exercises = serializers.SerializerMethodField()
+    username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = TrainingPlan
-        fields = ['plan_id', 'user', 'category', 'category_detail', 'name', 'public', 'break_time', 'order']
+        fields = ['plan_id', 'user', 'username', 'category', 'category_detail', 'name', 'public', 'break_time', 'order', 'exercises']
         read_only_fields = ['user']
+
+    def get_exercises(self, obj):
+        if not obj.order:
+            return []
+        
+        # Ensure order is a list of IDs
+        if isinstance(obj.order, list):
+            exercise_ids = obj.order
+            # Fetch all exercises in the list
+            exercises = Exercise.objects.filter(exercise_id__in=exercise_ids)
+            # Create a map for sorting
+            exercise_map = {e.exercise_id: e for e in exercises}
+            # Return ordered list, filtering out any missing IDs
+            ordered_exercises = [exercise_map[eid] for eid in exercise_ids if eid in exercise_map]
+            return ExerciseSerializer(ordered_exercises, many=True).data
+        return []
 
 class TrainingExerciseExecutionSerializer(serializers.ModelSerializer):
     class Meta:

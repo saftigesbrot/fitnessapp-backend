@@ -3,8 +3,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from .models import TrainingPlan, TrainingCategory, TrainingPlanExercise, TrainingExerciseExecution, TrainingPlanScoring
-from .serializers import TrainingPlanSerializer, TrainingPlanExerciseSerializer
+from .serializers import TrainingPlanSerializer, TrainingPlanExerciseSerializer, TrainingCategorySerializer
+# from scorings.models import ScoringCurrent, ScoringAllTime, LevelCurrent # Moved local to avoid circular import
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -30,6 +32,29 @@ def get_training(request):
     # If no ID, list user's plans
     plans = TrainingPlan.objects.filter(user=request.user)
     serializer = TrainingPlanSerializer(plans, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def search_training(request):
+    query = request.query_params.get('q', '')
+    if not query:
+        return Response([])
+
+    # Find plans that match name AND are (public OR owned by user)
+    plans = TrainingPlan.objects.filter(
+        Q(name__icontains=query) & 
+        (Q(public=True) | Q(user=request.user))
+    ).distinct()
+    
+    serializer = TrainingPlanSerializer(plans, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_training_categories(request):
+    categories = TrainingCategory.objects.all()
+    serializer = TrainingCategorySerializer(categories, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
@@ -79,83 +104,63 @@ def start_training(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def save_training(request):
-    """
-    Saves a completed training session.
-    Expects data:
-    {
-        "plan_exercise_id": <id>,
-        "scoring": { "use_scoring": true, "scoring_id": 123 },
-        "executions": [
-            { "exercise_id": 1, "weight": 50, "duration": 0, "repetitions": 10 },
-            ...
-        ]
-    }
-    """
-    plan_exercise_id = request.data.get('plan_exercise_id')
-    scoring_data = request.data.get('scoring', {})
-    executions_data = request.data.get('executions', [])
-    
-    if not plan_exercise_id:
-        return Response({'error': 'plan_exercise_id is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-    session = get_object_or_404(TrainingPlanExercise, plan_exercise_id=plan_exercise_id)
-    
-    # Verify owner (via plan)
-    if session.plan.user != request.user:
-        return Response({'error': 'Not authorized to save this session'}, status=status.HTTP_403_FORBIDDEN)
+def save_training_execution(request):
+    try:
+        user = request.user
+        data = request.data
+        plan_id = data.get('plan_id')
+        exercise_order = data.get('exercises_order', []) # JSON list of IDs
+        sets_data = data.get('sets', []) # List of set objects
 
-    # 1. Handle Scoring
-    scoring_obj = None
-    if scoring_data.get('use_scoring', True):
-        score_value = scoring_data.get('score_value', 0) # Expect frontend to send calculated score
-        # Note: Previous implementation assumed 'scoring_id' was an integer value/ID. 
-        # Now we create a new ScoringAllTime entry.
+        # 1. Create TrainingPlanExercise (The Session)
+        plan = TrainingPlan.objects.get(plan_id=plan_id)
         
-        # Create AllTime entry
-        from scorings.models import ScoringAllTime, ScoringCurrent, ScoringTop
-        scoring_obj = ScoringAllTime.objects.create(
-            user=request.user,
-            value=score_value
+        session = TrainingPlanExercise.objects.create(
+            plan=plan,
+            order=exercise_order
         )
-        
-        # Update Current
-        ScoringCurrent.objects.update_or_create(
-            user=request.user,
-            defaults={'value': score_value}
-        )
-        
-        # Update Top if higher
-        top_scoring, created = ScoringTop.objects.get_or_create(user=request.user, defaults={'value': score_value})
-        if not created and score_value > top_scoring.value:
-            top_scoring.value = score_value
-            top_scoring.save()
 
-    scoring_plan = TrainingPlanScoring.objects.create(
-        use_scoring=scoring_data.get('use_scoring', True),
-        scoring=scoring_obj
-    )
-    
-    # 2. Link Scoring to Session
-    session.scoring_plan = scoring_plan
-    session.save()
-    
-    # 3. Create Executions
-    created_executions = []
-    for exec_data in executions_data:
-        # Validate required fields for execution
-        # Ideally use a serializer for validation too, but manual creation for simplicity here
-        try:
-            execution = TrainingExerciseExecution.objects.create(
-                plan_exercise=session,
-                exercise_id=exec_data.get('exercise_id'),
-                weight=exec_data.get('weight', 0),
-                duration=exec_data.get('duration', 0),
-                repetitions=exec_data.get('repetitions', 0)
-            )
-            created_executions.append(execution)
-        except Exception as e:
-            # If error, might want to rollback transaction, but for now just log/error
-            pass
+        # 2. Iterate and create Executions
+        total_xp = 0
+        from exercises.models import Exercise
 
-    return Response({'message': 'Training saved successfully'}, status=status.HTTP_200_OK)
+        for set_info in sets_data:
+            # set_info structure assumed: { exercise_id, weight, reps, duration? }
+            exercise_id = set_info.get('exercise_id')
+            weight = set_info.get('weight', 0)
+            reps = set_info.get('reps', 0)
+            duration = set_info.get('duration', 0)
+            
+            try:
+                exercise = Exercise.objects.get(exercise_id=exercise_id)
+                
+                TrainingExerciseExecution.objects.create(
+                    plan_exercise=session,
+                    exercise=exercise,
+                    weight=float(weight) if weight else 0,
+                    repetitions=int(reps) if reps else 0,
+                    duration=int(duration) if duration else 0
+                )
+                total_xp += 10
+            except Exercise.DoesNotExist:
+                continue
+
+        # 3. Update User XP
+        from scorings.models import ScoringCurrent, ScoringAllTime, LevelCurrent
+        
+        # Level ONLY (Scoring is separate)
+        level_tracker, created = LevelCurrent.objects.get_or_create(user=user)
+        level_tracker.xp += total_xp
+        level_tracker.save()
+
+        return Response({
+            'success': True, 
+            'xp_earned': total_xp,
+            'message': 'Training saved successfully'
+        })
+        
+    except TrainingPlan.DoesNotExist:
+        return Response({'error': 'Plan not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print(f"Error saving training: {e}")
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
