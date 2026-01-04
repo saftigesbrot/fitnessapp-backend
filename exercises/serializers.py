@@ -14,3 +14,10 @@ class ExerciseSerializer(serializers.ModelSerializer):
         model = Exercise
         fields = ['exercise_id', 'category', 'category_detail', 'user', 'name', 'description', 'image']
         read_only_fields = ['user']  # User is set automatically in the view
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='category_id')
+    
+    class Meta:
+        model = ExerciseCategory
+        fields = ['id', 'name']

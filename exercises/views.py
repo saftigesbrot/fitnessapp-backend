@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
 from .models import Exercise, ExerciseCategory
-from .serializers import ExerciseSerializer
+from .serializers import ExerciseSerializer, CategoryListSerializer
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -27,6 +27,7 @@ def create_exercise(request):
     if serializer.is_valid():
         serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    print("Serializer Errors:", serializer.errors) # Added logging
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
@@ -45,4 +46,11 @@ def search_exercises(request):
         queryset = queryset.filter(category__name__icontains=category_query)
         
     serializer = ExerciseSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_category_list(request):
+    categories = ExerciseCategory.objects.all()
+    serializer = CategoryListSerializer(categories, many=True)
     return Response(serializer.data)
