@@ -1,22 +1,14 @@
 from rest_framework import serializers
-from .models import ScoringCurrent, ScoringTop, ScoringAllTime, LevelCurrent
+from .models import Scoring, LevelCurrent
 
-class ScoringCurrentSerializer(serializers.ModelSerializer):
+class ScoringSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
-        model = ScoringCurrent
-        fields = '__all__'
-
-class ScoringTopSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ScoringTop
-        fields = '__all__'
-
-class ScoringAllTimeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ScoringAllTime
+        model = Scoring
         fields = '__all__'
 
 class LevelCurrentSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = LevelCurrent
-        fields = ['level_id', 'user', 'level', 'xp']
+        fields = ['level_id', 'user', 'username', 'level', 'xp']

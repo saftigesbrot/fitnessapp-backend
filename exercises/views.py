@@ -36,7 +36,7 @@ def search_exercises(request):
     name_query = request.query_params.get('name')
     category_query = request.query_params.get('category')
     
-    queryset = Exercise.objects.all()
+    queryset = Exercise.objects.all().order_by('-exercise_id')
     
     if name_query:
         queryset = queryset.filter(name__icontains=name_query)

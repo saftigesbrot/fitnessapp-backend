@@ -9,30 +9,31 @@ from .serializers import TrainingPlanSerializer, TrainingPlanExerciseSerializer,
 # from scorings.models import ScoringCurrent, ScoringAllTime, LevelCurrent # Moved local to avoid circular import
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_training(request):
     plan_id = request.query_params.get('id')
-    user_id = request.user.id
     
-    # Filter by user or if public
-    # Assuming user wants to see their own plans OR public plans
-    # If explicit ID is given:
-    if plan_id:
-        try:
-            plan = TrainingPlan.objects.get(plan_id=plan_id)
-            # Check permissions: owner or public
-            if plan.public or plan.user == request.user:
-                serializer = TrainingPlanSerializer(plan)
-                return Response(serializer.data)
-            else:
-                 return Response({'error': 'Not authorized to view this plan'}, status=status.HTTP_403_FORBIDDEN)
-        except TrainingPlan.DoesNotExist:
-             return Response({'error': 'Training plan not found'}, status=status.HTTP_404_NOT_FOUND)
-    
-    # If no ID, list user's plans
-    plans = TrainingPlan.objects.filter(user=request.user)
-    serializer = TrainingPlanSerializer(plans, many=True)
-    return Response(serializer.data)
+    # If no ID, require authentication to list user's plans
+    if not plan_id:
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+        plans = TrainingPlan.objects.filter(user=request.user)
+        serializer = TrainingPlanSerializer(plans, many=True)
+        return Response(serializer.data)
+
+    # If ID is provided, check if public or owner
+    try:
+        plan = TrainingPlan.objects.get(plan_id=plan_id)
+        
+        is_owner = request.user.is_authenticated and plan.user == request.user
+        
+        if plan.public or is_owner:
+            serializer = TrainingPlanSerializer(plan)
+            return Response(serializer.data)
+        else:
+            return Response({'error': 'Not authorized to view this plan'}, status=status.HTTP_403_FORBIDDEN)
+    except TrainingPlan.DoesNotExist:
+            return Response({'error': 'Training plan not found'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -157,10 +158,10 @@ def save_training_execution(request):
         # 3. Handle Scoring
         if scoring_data and scoring_data.get('use_scoring'):
              score_val = scoring_data.get('score_value', 0)
-             from scorings.models import ScoringAllTime
+             from scorings.models import Scoring
              
              # Create Scoring Entry
-             scoring_entry = ScoringAllTime.objects.create(
+             scoring_entry = Scoring.objects.create(
                  user=user, 
                  value=score_val
              )

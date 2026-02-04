@@ -1,32 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class ScoringCurrent(models.Model):
+class Scoring(models.Model):
     scoring_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     value = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - Current: {self.value}"
-
-class ScoringTop(models.Model):
-    scoring_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    value = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username} - Top: {self.value}"
-
-class ScoringAllTime(models.Model):
-    scoring_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    value = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username} - Entry: {self.value}"
+        return f"{self.user.username} - Score: {self.value}"
 
 class LevelCurrent(models.Model):
     level_id = models.AutoField(primary_key=True)
