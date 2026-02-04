@@ -9,6 +9,6 @@ urlpatterns = [
     path('training-start', views.start_training, name='start_training'),
     path('training-edit', views.edit_training, name='edit_training'),
     path('training-save', views.save_training_execution, name='save_training'),
-    path('training-last-executed', views.get_last_executed_plan, name='get_last_executed_plan'),
+    path('training-last-executed', views.get_recommendations, name='get_recommendations'),
 ]
 

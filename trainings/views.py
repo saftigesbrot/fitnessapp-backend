@@ -197,26 +197,33 @@ def save_training_execution(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_last_executed_plan(request):
-    """Get the most recently executed training plan for the current user"""
+def get_recommendations(request):
+    """Get recommendations: new public training plans and exercises"""
     try:
-        # Find the most recent TrainingPlanExercise for this user's plans
-        last_session = TrainingPlanExercise.objects.filter(
-            plan__user=request.user
-        ).order_by('-created_at').first()
+        from exercises.models import Exercise
+        from exercises.serializers import ExerciseSerializer
         
-        if last_session:
-            serializer = TrainingPlanSerializer(last_session.plan)
-            return Response(serializer.data)
-        else:
-            # No sessions found, return the user's first plan as fallback
-            first_plan = TrainingPlan.objects.filter(user=request.user).first()
-            if first_plan:
-                serializer = TrainingPlanSerializer(first_plan)
-                return Response(serializer.data)
-            else:
-                return Response({'error': 'No training plans found'}, status=status.HTTP_404_NOT_FOUND)
+        # Get newest public training plans (max 3)
+        new_plans = TrainingPlan.objects.filter(
+            public=True
+        ).exclude(
+            user=request.user  # Exclude own plans
+        ).order_by('-plan_id')[:3]
+        
+        # Get newest exercises from other users (max 3)
+        # Note: Exercise model doesn't have a 'public' field
+        new_exercises = Exercise.objects.exclude(
+            user=request.user  # Exclude own exercises
+        ).order_by('-exercise_id')[:3]
+        
+        plans_serializer = TrainingPlanSerializer(new_plans, many=True)
+        exercises_serializer = ExerciseSerializer(new_exercises, many=True)
+        
+        return Response({
+            'plans': plans_serializer.data,
+            'exercises': exercises_serializer.data
+        })
     except Exception as e:
-        print(f"Error getting last executed plan: {e}")
+        print(f"Error getting recommendations: {e}")
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
