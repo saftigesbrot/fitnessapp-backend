@@ -180,11 +180,12 @@ def save_training_execution(request):
         from scorings.models import LevelCurrent
         level_tracker, created = LevelCurrent.objects.get_or_create(user=user)
         level_tracker.xp += total_xp
-        level_tracker.save()
+        level_tracker.check_and_level_up()  # This will save automatically
 
         return Response({
             'success': True, 
             'xp_earned': total_xp,
+            'new_level': level_tracker.level,
             'message': 'Training saved successfully'
         })
         

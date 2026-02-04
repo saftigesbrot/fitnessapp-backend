@@ -80,12 +80,15 @@ def get_scoring(request):
 @permission_classes([AllowAny])
 def get_level(request):
     if not request.user.is_authenticated:
-        return Response({'level': 1, 'xp': 0})
+        return Response({'level': 1, 'xp': 0, 'xp_current': 0, 'xp_needed': 141})
 
     try:
         level = LevelCurrent.objects.get(user=request.user)
+        # Check and apply level-ups before returning
+        level.check_and_level_up()
         serializer = LevelCurrentSerializer(level)
         return Response(serializer.data)
     except LevelCurrent.DoesNotExist:
         # Return default if not exists
-        return Response({'level': 1, 'xp': 0})
+        return Response({'level': 1, 'xp': 0, 'xp_current': 0, 'xp_needed': 141})
+
