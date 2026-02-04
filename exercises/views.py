@@ -15,6 +15,12 @@ def get_exercise(request):
     
     try:
         exercise = Exercise.objects.get(exercise_id=exercise_id)
+        
+        # Check visibility
+        if not exercise.public:
+            if not request.user.is_authenticated or exercise.user != request.user:
+                return Response({'error': 'Not authorized to view this exercise'}, status=status.HTTP_403_FORBIDDEN)
+
         serializer = ExerciseSerializer(exercise)
         return Response(serializer.data)
     except Exercise.DoesNotExist:
@@ -36,7 +42,13 @@ def search_exercises(request):
     name_query = request.query_params.get('name')
     category_query = request.query_params.get('category')
     
-    queryset = Exercise.objects.all().order_by('-exercise_id')
+    # Base queryset: Public exercises OR (if authenticated) own exercises
+    if request.user.is_authenticated:
+        queryset = Exercise.objects.filter(
+            Q(public=True) | Q(user=request.user)
+        ).distinct().order_by('-exercise_id')
+    else:
+        queryset = Exercise.objects.filter(public=True).order_by('-exercise_id')
     
     if name_query:
         queryset = queryset.filter(name__icontains=name_query)
