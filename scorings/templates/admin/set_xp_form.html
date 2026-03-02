@@ -1,0 +1,54 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div style="margin-bottom: 20px;">
+        <h2>Ausgewählte User:</h2>
+        <ul>
+        {% for item in users %}
+            {% if system == 'scoring' %}
+                <li>
+                    <strong>{{ item.user.username }}</strong> - 
+                    Score: {{ item.value }}, 
+                    XP: {{ item.xp }},
+                    Level: {{ item.get_level }}
+                </li>
+            {% else %}
+                <li>
+                    <strong>{{ item.user.username }}</strong> - 
+                    XP: {{ item.xp }},
+                    Level: {{ item.get_level }}
+                </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <div style="margin-bottom: 20px; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px;">
+        {{ form.as_p }}
+        <p style="color: #666; font-size: 13px; margin-top: 10px;">
+            <strong>Hinweis:</strong> Das Level wird automatisch basierend auf dem Gesamt-XP berechnet. 
+            Du setzt nur die XP, das Level passt sich automatisch an.
+        </p>
+    </div>
+    
+    <div>
+        <input type="submit" name="apply" value="XP setzen" style="background-color: #417690; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;" />
+        <a href="{{ request.META.HTTP_REFERER }}" style="margin-left: 10px; padding: 10px 20px; text-decoration: none; color: #666; border: 1px solid #ddd; border-radius: 5px; display: inline-block;">Abbrechen</a>
+    </div>
+</form>
+
+<script>
+document.querySelector('input[type="submit"]').addEventListener('mouseenter', function() {
+    this.style.backgroundColor = '#205067';
+});
+document.querySelector('input[type="submit"]').addEventListener('mouseleave', function() {
+    this.style.backgroundColor = '#417690';
+});
+</script>
+{% endblock %}
