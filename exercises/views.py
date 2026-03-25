@@ -66,3 +66,42 @@ def get_category_list(request):
     categories = ExerciseCategory.objects.all()
     serializer = CategoryListSerializer(categories, many=True)
     return Response(serializer.data)
+
+@api_view(['PUT', 'POST'])
+@permission_classes([IsAuthenticated])
+def update_exercise(request):
+    exercise_id = request.data.get('exercise_id') or request.query_params.get('id')
+    if not exercise_id:
+        return Response({'error': 'Exercise ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    try:
+        exercise = Exercise.objects.get(exercise_id=exercise_id)
+    except Exercise.DoesNotExist:
+        return Response({'error': 'Exercise not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    if exercise.user != request.user:
+        return Response({'error': 'Not authorized to edit this exercise'}, status=status.HTTP_403_FORBIDDEN)
+        
+    serializer = ExerciseSerializer(exercise, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE', 'POST'])
+@permission_classes([IsAuthenticated])
+def delete_exercise(request):
+    exercise_id = request.data.get('exercise_id') or request.query_params.get('id')
+    if not exercise_id:
+        return Response({'error': 'Exercise ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    try:
+        exercise = Exercise.objects.get(exercise_id=exercise_id)
+    except Exercise.DoesNotExist:
+        return Response({'error': 'Exercise not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    if exercise.user != request.user:
+        return Response({'error': 'Not authorized to delete this exercise'}, status=status.HTTP_403_FORBIDDEN)
+        
+    exercise.delete()
+    return Response({'message': 'Exercise deleted successfully'}, status=status.HTTP_204_NO_CONTENT)

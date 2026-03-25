@@ -6,4 +6,6 @@ urlpatterns = [
     path('exercise-create', views.create_exercise, name='create_exercise'),
     path('exercise-search', views.search_exercises, name='search_exercises'),
     path('category-list', views.get_category_list, name='get_category_list'),
+    path('exercise-update', views.update_exercise, name='update_exercise'),
+    path('exercise-delete', views.delete_exercise, name='delete_exercise'),
 ]
