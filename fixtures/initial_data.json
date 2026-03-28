@@ -1,0 +1,507 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "admin",
+      "password": "pbkdf2_sha256$600000$test$test",
+      "email": "admin@fitness.com",
+      "is_staff": true,
+      "is_superuser": true,
+      "is_active": true,
+      "first_name": "Admin",
+      "last_name": "User"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "max_mustermann",
+      "password": "pbkdf2_sha256$600000$test123$test",
+      "email": "max@fitness.com",
+      "is_staff": false,
+      "is_superuser": false,
+      "is_active": true,
+      "first_name": "Max",
+      "last_name": "Mustermann"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "username": "sarah_schmidt",
+      "password": "pbkdf2_sha256$600000$test123$test",
+      "email": "sarah@fitness.com",
+      "is_staff": false,
+      "is_superuser": false,
+      "is_active": true,
+      "first_name": "Sarah",
+      "last_name": "Schmidt"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "username": "tom_mueller",
+      "password": "pbkdf2_sha256$600000$test123$test",
+      "email": "tom@fitness.com",
+      "is_staff": false,
+      "is_superuser": false,
+      "is_active": true,
+      "first_name": "Tom",
+      "last_name": "Mueller"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 5,
+    "fields": {
+      "username": "lisa_wagner",
+      "password": "pbkdf2_sha256$600000$test123$test",
+      "email": "lisa@fitness.com",
+      "is_staff": false,
+      "is_superuser": false,
+      "is_active": true,
+      "first_name": "Lisa",
+      "last_name": "Wagner"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 6,
+    "fields": {
+      "username": "jan_fischer",
+      "password": "pbkdf2_sha256$600000$test123$test",
+      "email": "jan@fitness.com",
+      "is_staff": false,
+      "is_superuser": false,
+      "is_active": true,
+      "first_name": "Jan",
+      "last_name": "Fischer"
+    }
+  },
+  {
+    "model": "exercises.exercisecategory",
+    "pk": 1,
+    "fields": {
+      "name": "Brust"
+    }
+  },
+  {
+    "model": "exercises.exercisecategory",
+    "pk": 2,
+    "fields": {
+      "name": "Rücken"
+    }
+  },
+  {
+    "model": "exercises.exercisecategory",
+    "pk": 3,
+    "fields": {
+      "name": "Beine"
+    }
+  },
+  {
+    "model": "exercises.exercisecategory",
+    "pk": 4,
+    "fields": {
+      "name": "Schultern"
+    }
+  },
+  {
+    "model": "exercises.exercisecategory",
+    "pk": 5,
+    "fields": {
+      "name": "Arme"
+    }
+  },
+  {
+    "model": "exercises.exercisecategory",
+    "pk": 6,
+    "fields": {
+      "name": "Bauch"
+    }
+  },
+  {
+    "model": "exercises.exercisecategory",
+    "pk": 7,
+    "fields": {
+      "name": "Cardio"
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 1,
+    "fields": {
+      "category": 1,
+      "user": 1,
+      "name": "Bankdrücken",
+      "description": "Klassische Brustübung für Kraft und Masse. Flach auf der Bank liegen, Langhantel vom Rack nehmen und kontrolliert zur Brust absenken.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 2,
+    "fields": {
+      "category": 1,
+      "user": 1,
+      "name": "Liegestütze",
+      "description": "Grundübung mit eigenem Körpergewicht. Körper in Planke-Position, Arme beugen und strecken.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 3,
+    "fields": {
+      "category": 1,
+      "user": 1,
+      "name": "Butterfly",
+      "description": "Isolationsübung für die Brustmuskulatur. An der Maschine oder mit Kurzhanteln ausführbar.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 4,
+    "fields": {
+      "category": 2,
+      "user": 1,
+      "name": "Kreuzheben",
+      "description": "Eine der besten Ganzkörperübungen. Fokus auf Rücken, Beine und Core. Langhantel vom Boden hochheben.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 5,
+    "fields": {
+      "category": 2,
+      "user": 1,
+      "name": "Klimmzüge",
+      "description": "Bodyweight-Übung für einen starken Rücken. An der Stange hochziehen bis das Kinn über der Stange ist.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 6,
+    "fields": {
+      "category": 2,
+      "user": 1,
+      "name": "Rudern",
+      "description": "Horizontale Zugübung für den mittleren Rücken. Mit Langhantel, Kurzhantel oder am Kabelzug.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 7,
+    "fields": {
+      "category": 3,
+      "user": 1,
+      "name": "Kniebeugen",
+      "description": "Die Königin aller Übungen. Langhantel auf den Schultern, in die Hocke gehen und wieder hochdrücken.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 8,
+    "fields": {
+      "category": 3,
+      "user": 1,
+      "name": "Ausfallschritte",
+      "description": "Einbeinige Übung für Beine und Balance. Schritt nach vorne und Knie beugen.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 9,
+    "fields": {
+      "category": 3,
+      "user": 1,
+      "name": "Beinpresse",
+      "description": "Maschinen-Übung für die gesamte Beinmuskulatur. Plattform mit den Füßen wegdrücken.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 10,
+    "fields": {
+      "category": 4,
+      "user": 1,
+      "name": "Schulterdrücken",
+      "description": "Hauptübung für die Schultern. Langhantel oder Kurzhanteln über Kopf drücken.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 11,
+    "fields": {
+      "category": 4,
+      "user": 1,
+      "name": "Seitheben",
+      "description": "Isolationsübung für seitliche Schulter. Kurzhanteln seitlich bis auf Schulterhöhe heben.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 12,
+    "fields": {
+      "category": 5,
+      "user": 1,
+      "name": "Bizeps Curls",
+      "description": "Klassische Bizeps-Übung. Kurzhanteln oder Langhantel zum Körper curl en.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 13,
+    "fields": {
+      "category": 5,
+      "user": 1,
+      "name": "Trizeps Dips",
+      "description": "Bodyweight oder Gewichts-Übung für Trizeps. Am Barren oder an Bank.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 14,
+    "fields": {
+      "category": 6,
+      "user": 1,
+      "name": "Plank",
+      "description": "Statische Core-Übung. Unterarmstütz halten und Körperspannung aufbauen.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 15,
+    "fields": {
+      "category": 6,
+      "user": 1,
+      "name": "Crunches",
+      "description": "Klassische Bauchübung. Auf dem Rücken liegen und Oberkörper zu den Knien bewegen.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 16,
+    "fields": {
+      "category": 7,
+      "user": 1,
+      "name": "Laufen",
+      "description": "Ausdauertraining auf dem Laufband oder draußen.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "exercises.exercise",
+    "pk": 17,
+    "fields": {
+      "category": 7,
+      "user": 1,
+      "name": "Burpees",
+      "description": "Intensive Ganzkörper-Cardio-Übung. Liegestütz, Sprung und Streckung kombiniert.",
+      "image": "",
+      "public": true
+    }
+  },
+  {
+    "model": "trainings.trainingcategory",
+    "pk": 1,
+    "fields": {
+      "name": "Ganzkörper",
+      "difficulty_level": "Anfänger"
+    }
+  },
+  {
+    "model": "trainings.trainingcategory",
+    "pk": 2,
+    "fields": {
+      "name": "Split",
+      "difficulty_level": "Fortgeschritten"
+    }
+  },
+  {
+    "model": "trainings.trainingcategory",
+    "pk": 3,
+    "fields": {
+      "name": "Cardio",
+      "difficulty_level": "Alle"
+    }
+  },
+  {
+    "model": "trainings.trainingplan",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "category": 1,
+      "name": "Einsteiger Ganzkörper",
+      "public": true,
+      "break_time": 90,
+      "order": [1, 4, 7, 12, 14]
+    }
+  },
+  {
+    "model": "trainings.trainingplan",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "category": 2,
+      "name": "Brust & Trizeps",
+      "public": true,
+      "break_time": 60,
+      "order": [1, 2, 3, 13]
+    }
+  },
+  {
+    "model": "trainings.trainingplan",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "category": 2,
+      "name": "Rücken & Bizeps",
+      "public": true,
+      "break_time": 60,
+      "order": [4, 5, 6, 12]
+    }
+  },
+  {
+    "model": "scorings.scoring",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "value": 3500,
+      "xp": 3000,
+      "created_at": "2026-02-10T09:00:00Z"
+    }
+  },
+  {
+    "model": "scorings.scoring",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "value": 2850,
+      "xp": 1800,
+      "created_at": "2026-02-10T10:00:00Z"
+    }
+  },
+  {
+    "model": "scorings.scoring",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "value": 3200,
+      "xp": 2500,
+      "created_at": "2026-02-10T11:00:00Z"
+    }
+  },
+  {
+    "model": "scorings.scoring",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "value": 1950,
+      "xp": 950,
+      "created_at": "2026-02-10T12:00:00Z"
+    }
+  },
+  {
+    "model": "scorings.scoring",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "value": 2650,
+      "xp": 1500,
+      "created_at": "2026-02-10T13:00:00Z"
+    }
+  },
+  {
+    "model": "scorings.scoring",
+    "pk": 6,
+    "fields": {
+      "user": 6,
+      "value": 1750,
+      "xp": 700,
+      "created_at": "2026-02-10T14:00:00Z"
+    }
+  },
+  {
+    "model": "scorings.levelcurrent",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "xp": 2500
+    }
+  },
+  {
+    "model": "scorings.levelcurrent",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "xp": 1450
+    }
+  },
+  {
+    "model": "scorings.levelcurrent",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "xp": 2100
+    }
+  },
+  {
+    "model": "scorings.levelcurrent",
+    "pk": 4,
+    "fields": {
+      "user": 4,
+      "xp": 850
+    }
+  },
+  {
+    "model": "scorings.levelcurrent",
+    "pk": 5,
+    "fields": {
+      "user": 5,
+      "xp": 1200
+    }
+  },
+  {
+    "model": "scorings.levelcurrent",
+    "pk": 6,
+    "fields": {
+      "user": 6,
+      "xp": 650
+    }
+  }
+]

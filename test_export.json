@@ -1,0 +1,165 @@
+{
+  "categories": [
+    {
+      "category_id": 2,
+      "name": "Brust"
+    },
+    {
+      "category_id": 3,
+      "name": "Rücken"
+    },
+    {
+      "category_id": 4,
+      "name": "Beine"
+    },
+    {
+      "category_id": 5,
+      "name": "Schultern"
+    },
+    {
+      "category_id": 6,
+      "name": "Arme"
+    },
+    {
+      "category_id": 7,
+      "name": "Core"
+    }
+  ],
+  "exercises": [
+    {
+      "exercise_id": 2,
+      "category_id": 2,
+      "name": "Bankdrücken",
+      "description": "Klassische Brustübung mit Langhantel auf der Flachbank. Führe die Hantel kontrolliert zur Brust und drücke sie explosiv nach oben.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 3,
+      "category_id": 2,
+      "name": "Liegestütze",
+      "description": "Körpergewichtsübung für Brust, Schultern und Trizeps. Halte den Körper in einer geraden Linie.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 4,
+      "category_id": 2,
+      "name": "Kurzhantel Fliegende",
+      "description": "Isolation der Brustmuskulatur. Führe die Kurzhanteln in einer weiten Bogenbewegung zusammen.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 5,
+      "category_id": 3,
+      "name": "Klimmzüge",
+      "description": "Effektive Übung für den oberen Rücken und Bizeps. Ziehe dich bis das Kinn über die Stange ist.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 6,
+      "category_id": 3,
+      "name": "Kreuzheben",
+      "description": "Komplexübung für den gesamten hinteren Rücken und Beine. Achte auf einen geraden Rücken.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 7,
+      "category_id": 3,
+      "name": "Rudern",
+      "description": "Langhantelrudern für mittleren Rücken. Ziehe die Hantel zum unteren Brustbereich.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 8,
+      "category_id": 4,
+      "name": "Kniebeugen",
+      "description": "Die Königsübung für Beine und Po. Gehe tief und halte die Knie stabil.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 9,
+      "category_id": 4,
+      "name": "Ausfallschritte",
+      "description": "Unilaterale Beinübung für Quadrizeps und Gesäßmuskulatur. Achte auf Kniestabilität.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 10,
+      "category_id": 4,
+      "name": "Beinpresse",
+      "description": "Maschinenübung für die Oberschenkelmuskulatur. Drücke das Gewicht kontrolliert nach oben.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 11,
+      "category_id": 5,
+      "name": "Schulterdrücken",
+      "description": "Überkopfdrücken für die Schultermuskulatur. Nutze Langhantel oder Kurzhanteln.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 12,
+      "category_id": 5,
+      "name": "Seitheben",
+      "description": "Isolation für die seitliche Schulter. Hebe die Kurzhanteln seitlich bis Schulterhöhe.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 13,
+      "category_id": 6,
+      "name": "Bizeps Curls",
+      "description": "Klassische Bizepsübung mit Kurzhanteln oder Langhantel. Halte die Ellenbogen fixiert.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 14,
+      "category_id": 6,
+      "name": "Trizeps Dips",
+      "description": "Effektive Trizepsübung am Barren oder Bank. Senke den Körper kontrolliert ab.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 15,
+      "category_id": 7,
+      "name": "Planks",
+      "description": "Isometrische Core-Übung. Halte den Körper in einer geraden Linie für maximale Spannung.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    },
+    {
+      "exercise_id": 16,
+      "category_id": 7,
+      "name": "Crunches",
+      "description": "Bauchmuskelübung für die oberen Bauchmuskeln. Rolle den Oberkörper kontrolliert ein.",
+      "public": true,
+      "image": null,
+      "username": "admin"
+    }
+  ]
+}

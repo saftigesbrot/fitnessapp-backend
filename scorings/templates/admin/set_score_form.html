@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div style="margin: 20px 0;">
+        <h3>Betroffene User:</h3>
+        <ul>
+            {% for item in users %}
+                <li>{{ item.user.username }} - Aktuell: {{ item.value }} Punkte</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <p style="background: #ffc; padding: 10px; border-radius: 5px;">
+        <strong>Info:</strong> Score-Range: 0 (schlecht) - 1000 (ausgeglichen) - 2000 (maximum)
+    </p>
+    <input type="submit" name="apply" value="Setzen" />
+    <a href="{% url 'admin:scorings_scoring_changelist' %}">Abbrechen</a>
+</form>
+{% endblock %}

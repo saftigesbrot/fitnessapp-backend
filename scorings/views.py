@@ -31,7 +31,12 @@ def get_scoring(request):
             serializer = ScoringSerializer(scoring)
             return Response(serializer.data)
         except Scoring.DoesNotExist:
-             return Response({'value': 0, 'user': user.id})
+            # Return default values
+            return Response({
+                'value': 0,
+                'user': user.id,
+                'username': user.username
+            })
 
     elif scoring_type == 'top':
         # Max value for user
@@ -40,7 +45,12 @@ def get_scoring(request):
             serializer = ScoringSerializer(scoring)
             return Response(serializer.data)
         else:
-             return Response({'value': 0, 'user': user.id})
+            # Return default values
+            return Response({
+                'value': 0,
+                'user': user.id,
+                'username': user.username
+            })
     
     elif scoring_type == 'leaderboard':
         queryset = Scoring.objects.all()
@@ -65,8 +75,8 @@ def get_scoring(request):
         return Response(list(leaderboard_data))
     
     elif scoring_type == 'levels':
-        # Return users sorted by level descending, then XP descending
-        levels = LevelCurrent.objects.all().order_by('-level', '-xp')[:50]
+        # Return users sorted by XP descending (level is calculated from XP)
+        levels = LevelCurrent.objects.all().order_by('-xp')[:50]
         serializer = LevelCurrentSerializer(levels, many=True)
         return Response(serializer.data)
 
@@ -84,8 +94,6 @@ def get_level(request):
 
     try:
         level = LevelCurrent.objects.get(user=request.user)
-        # Check and apply level-ups before returning
-        level.check_and_level_up()
         serializer = LevelCurrentSerializer(level)
         return Response(serializer.data)
     except LevelCurrent.DoesNotExist:
